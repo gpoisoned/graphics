@@ -28,8 +28,7 @@ void torusVertex(float th, float ph, float R, float r){
 	 glVertex3f(x,y,z);
 }
 
-void drawTorus(float *pos, float *color, float theta, float phi, float R,
-							 float r, int delta){
+void drawTorus(float *color, float theta, float phi, float R, float r, int delta){
 	 for (float th = 0; th <= theta; th += delta){
 			glBegin(GL_QUAD_STRIP);
 			glColor3fv(color);
@@ -359,48 +358,127 @@ void drawChair(float scale, float *color){
 }
 
 void drawTeaCup(float scale, float *color){
+	// Save transformation
 	glPushMatrix();
+	// Offset, scale
 	glScaled(scale, scale, scale);
+	// top cylinder
+		glPushMatrix();
+		glTranslated(0 ,3.2, 0);
+		glScaled(1,1,1);
+		drawCylinder(360, 10, color, 3.4, 2.8);
+		glPopMatrix();
+
+	// middle cylinder
+		glPushMatrix();
+		glTranslated(0 ,2, 0);
+		glScaled(1,0.2,1);
+		drawCylinder(360, 10, color, 2.8, 2.8);
+		glPopMatrix();
+
 	// bottom cylinder
 		glPushMatrix();
 		glTranslated(0 ,1, 0);
 		glScaled(1,1,1);
-		drawCylinder(360, 10, color, 2.6, 2.2);
-		glPopMatrix();
-	// top cylinder
-		glPushMatrix();
-		glTranslated(0 ,3, 0);
-		glScaled(1,1,1);
-		drawCylinder(360, 10, color, 3.4, 3.0);
+		drawCylinder(360, 10, color, 2.8, 2.4);
 		glPopMatrix();
 
-	// bottom circle	
+	// bottom circle
 		glPushMatrix();
 		glTranslated(0 ,0, 0);
 		glScaled(1,1,1);
-		drawCircle(2.2, 360, 10, color);
+		drawCircle(2.4, 360, 10, color);
+		glPopMatrix();
+
+	// knob
+		glPushMatrix();
+		glTranslated(3 ,2, 0);
+		glRotated(247, 0, 0, 1);
+		glScaled(1,1,1);
+		drawTorus(color, 200, 360, 1, 0.25, 1);
 		glPopMatrix();
 
 	glPopMatrix();
 }
 
+void drawSofa(float scale, float *color){
+	// Save transformation
+	glPushMatrix();
+	// Offset, scale
+	glScaled(scale, scale, scale);
 
-//----------------------------------------------------//
-/*
- *  Convenience routine to output raster text
- *  Use VARARGS to make this more flexible
- */
-#define LEN 8192  // Maximum length of text string
-void Print(const char* format , ...)
-{
-	 char    buf[LEN];
-	 char*   ch=buf;
-	 va_list args;
-	 //  Turn the parameters into a character string
-	 va_start(args,format);
-	 vsnprintf(buf,LEN,format,args);
-	 va_end(args);
-	 //  Display the characters one at a time at the current raster position
-	 while (*ch)
-			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,*ch++);
+	// bottom four legs
+
+		glPushMatrix();
+		glScaled(0.1, 0.2, 0.1);
+		glTranslated(8, -1, 5);
+		drawCube(color, false, true);
+		glPopMatrix();
+
+		glPushMatrix();
+		glScaled(0.1, 0.2, 0.1);
+		glTranslated(-8, -1, 5);
+		drawCube(color, false, true);
+		glPopMatrix();
+
+		glPushMatrix();
+		glScaled(0.1, 0.2, 0.1);
+		glTranslated(8, -1, -5);
+		drawCube(color, false, true);
+		glPopMatrix();
+
+		glPushMatrix();
+		glScaled(0.1, 0.2, 0.1);
+		glTranslated(-8, -1, -5);
+		drawCube(color, false, true);
+		glPopMatrix();
+
+	// Two side frames
+		glPushMatrix();
+		glScaled(0.15, 0.5, 1.25);
+		glTranslated(6, 0, -0.45);
+		drawCube(color, true, true);
+		glPopMatrix();
+
+		glPushMatrix();
+		glScaled(0.15, 0.5, 1.25);
+		glTranslated(-6, 0, -0.45);
+		drawCube(color, true, true);
+		glPopMatrix();
+
+	// Bottom frame
+		glPushMatrix();
+		glScaled(1.9, 0.15, 1.25);
+		glTranslated(-0.46, 0, -0.45);
+		drawCube(color, true, true);
+		glPopMatrix();
+
+
+	glPopMatrix();
+}
+
+void drawCylinder_inward(float theta, int delta, float *color, float Rtop, float Rbot){
+	glBegin(GL_QUAD_STRIP);
+	glColor3fv(color);
+	for (float th = 0; th <= theta; th += delta){
+		glNormal3f(Cos(th),0,-Sin(th));
+		glVertex3f(Rtop * Cos(th), +1, Rtop *Sin(th));
+		glVertex3f(Rbot * Cos(th), -1, Rbot * Sin(th));
+	}
+	glEnd();
+}
+
+void drawLamp(float* color){
+    // Two layers of cylinder
+	  float red[] = {1.0f, 0.0f, 0.0f};
+		glPushMatrix();
+		glTranslated(0,-1.5,0);
+		drawCircle(2, 360, 1, red);
+		glPopMatrix();
+
+		glPushMatrix();
+		glScaled(0.5,0.5,0.5);
+    drawCylinder_inward(360, 1, color, 0.5, 1);
+    drawCylinder(360, 1, color, 0.65, 1.10);
+		glPopMatrix();
 }

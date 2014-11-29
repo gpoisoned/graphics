@@ -33,7 +33,7 @@ void drawTriangle(float *v1, float *v2, float *v3, float *color);
 
 // Draw Torus
 void torusVertex(float th, float ph, float R, float r);
-void drawTorus(float *pos, float *color, float theta, float phi, float R, float r,
+void drawTorus(float *color, float theta, float phi, float R, float r,
 								int delta);
 
 // Draw cylinder
@@ -60,8 +60,7 @@ void drawRoundTable(float scale, float *color);
 void drawSquareTable(float *color);
 void drawChair(float scale, float *color);
 void drawTeaCup(float scale, float *color);
-
-/* ********* Other Helpers*********** */
-void Print(const char* format , ...);
+void drawSofa(float scale, float *color);
+void drawLamp(float *color);
 
 #endif
