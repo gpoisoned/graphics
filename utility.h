@@ -28,39 +28,49 @@
 // Note: u, v, result are arrays of size 3
 void crossProduct(float *u, float* v, float *result);
 
-// Draw Triangle
-void drawTriangle(float *v1, float *v2, float *v3, float *color);
-
 // Draw Torus
 void torusVertex(float th, float ph, float R, float r);
 void drawTorus(float *color, float theta, float phi, float R, float r,
 								int delta);
 
 // Draw cylinder
-void drawCylinder(float theta, int delta, float *color, float Rtop, float Rbot);
+void drawCylinder(float theta, int delta, float *color, float Rtop, float Rbot, int texture);
+void drawCylinderClosedEnds(float theta, int delta, float *color, float Rtop, float Rbot, int texture);
 
 // Draw sphere
 void Vertex(float th,float ph);
 void drawSphere(int delta, float scale, float x, float y, float z);
 
 // Draw circle
-void drawCircle(float R, float theta, int delta, float *color);
+void drawCircle(float R, float theta, int delta, float *color, int texture);
 
-void drawSlantedSide();
-void drawFourSlantedSides(float lengthScale, float widthScale, float *color);
+void drawSlantedSide(int texture);
+void drawFourSlantedSides(float lengthScale, float widthScale, float *color, int texture);
 
 // Draw cube with each side made of several quads
-void drawCubeSide();
-void drawCube(float *color, int closedTop, int closedBottom);
+void drawCubeSide(int texture);
+void drawCube(float *color, int closedTop, int closedBottom, int texture);
 
-void drawSemiCircularShape(float *color, int closedBottom);
+void drawSemiCircularShape(float *color, int closedBottom, int texture);
 
 // ------ Bit complex stuff-----------//
-void drawRoundTable(float scale, float *color);
-void drawSquareTable(float *color);
-void drawChair(float scale, float *color);
-void drawTeaCup(float scale, float *color);
-void drawSofa(float scale, float *color);
-void drawLamp(float *color);
+void drawRoundTable(float scale, float *color, int texture);
+void drawSquareTable(float *color, int texture);
+void drawChair(float scale, float *color, int texture);
+void drawTeaCup(float scale, float *color, int texture);
+void drawSofa(float scale, float *color, int texture);
+void drawRoom(int wallTexture, int floorTexture, float D);
+void drawShelf(float scale, float *color, int texture);
+void drawTVstand(float scale, float *color, int texture);
+void drawBowl(float scale, float *color, int texture);
+void drawVase(float scale, float *color, int texture);
+void drawBulb(float *color);
+void drawLampUpright(float *color, int texture);
+void drawLampDownFacing(float *color, int texture);
+void drawTVScreen(float scale, float *color, int texture);
+void drawTVFrame(float scale, float *color, int texture);
+
+void drawBase(float *color);
+void drawDrumsSet(float *color);
 
 #endif

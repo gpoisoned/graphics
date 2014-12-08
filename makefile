@@ -1,12 +1,12 @@
 # Example 8
-EXE=shit
+EXE=final
 
 # Main target
 all: $(EXE)
 
 #  MinGW
 ifeq "$(OS)" "Windows_NT"
-CFLG=-O3 -Wall
+CFLG=-O3 -Wall -std=c99
 LIBS=-lglut32cu -lglu32 -lopengl32
 CLEAN=del *.exe *.o *.a
 else
@@ -16,7 +16,7 @@ CFLG=-O3 -Wall -Wno-deprecated-declarations
 LIBS=-framework GLUT -framework OpenGL
 #  Linux/Unix/Solaris
 else
-CFLG=-O3 -Wall
+CFLG=-O3 -Wall -std=c99
 LIBS=-lglut -lGLU -lGL -lm
 endif
 #  OSX/Linux/Unix/Solaris
@@ -24,7 +24,7 @@ CLEAN=rm -f $(EXE) *.o *.a
 endif
 
 # Dependencies
-shit.o: shit.c CSCIx229.h
+final.o: final.c CSCIx229.h
 fatal.o: fatal.c CSCIx229.h
 loadtexbmp.o: loadtexbmp.c CSCIx229.h
 print.o: print.c CSCIx229.h
@@ -44,7 +44,7 @@ CSCIx229.a:fatal.o loadtexbmp.o print.o project.o errcheck.o object.o
 	g++ -c $(CFLG) $<
 
 #  Link
-shit:shit.o utility.o CSCIx229.a
+final:final.o utility.o CSCIx229.a
 	gcc -O3 -o $@ $^   $(LIBS)
 
 #  Clean
