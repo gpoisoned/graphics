@@ -91,18 +91,6 @@ void drawSphere(int delta, float scale, float x, float y, float z){
 	glPopMatrix();
 }
 
-void findNormal(float *v1, float *v2, float *result){
-	float temp[3];
-	float len;
-	temp[0] = v1[0] - v2[0];
-	temp[1] = v1[1] - v2[1];
-	temp[2] = v1[2] - v2[2];
-	len = sqrt((temp[0]*temp[0]) + (temp[1] * temp[1]) + (temp[2]* temp[2]));
-	result[0] = temp[0] / len;
-	result[1] = temp[1] / len;
-	result[2] = temp[2] / len;
-}
-
 void drawCircle(float R, float theta, int delta, float *color, int texture){
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
@@ -219,13 +207,13 @@ void drawSemiCircularShape(float *color, int closedBottom, int texture){
 		glPushMatrix();
 			glPushMatrix();
 				glTranslated(0,0,0.15);
+				glRotated(180,0,1,0);
 				glRotated(-90,1,0,0);
 				drawCircle(1,180,10,color, texture);
 			glPopMatrix();
 			glPushMatrix();
 				glTranslated(0,0,-0.15);
 				glRotated(-90,1,0,0);
-				glRotated(180,0,0,1);
 				drawCircle(1,180,10,color, texture);
 			glPopMatrix();
 			glPushMatrix();
@@ -521,6 +509,7 @@ void drawSofa(float scale, float *color, int texture){
 void drawShelf(float scale, float *color, int texture){
 	// Save transformation
 	glPushMatrix();
+	glTranslated(0, 6.05, 1.5);
 	glRotated(-90, 1, 0,0);
 	// Offset, scale
 	glScaled(scale, scale, scale);
@@ -1064,34 +1053,34 @@ void drawTVScreen(float scale, float *color, int texture){
 }
 
 //Draw Dums set
-void drumCylinder(float *color){
+void drumCylinder(float *color, int cylinderTex, int circleTex){
 	// Main cylinder
 	glPushMatrix();
-		drawCylinder(360, 10, color, 3, 3,-1);
+		drawCylinder(360, 10, color, 3, 3, cylinderTex);
 		// Draw closing circles
 		glPushMatrix();
 			glTranslated(0, 0.75, 0);
-			drawCircle(3, 360, 10,color, -1);
+			drawCircle(3, 360, 10,color, circleTex);
 		glPopMatrix();
 		glPushMatrix();
 			glTranslated(0, -0.75, 0);
 			glRotated(180,1,0,0);
-			drawCircle(3, 360, 10,color, -1);
+			drawCircle(3, 360, 10,color, circleTex);
 		glPopMatrix();
 	glPopMatrix();
 }
 
-void drumConnectorBase(float *color){
+void drumConnectorBase(float *color, int metallicTex){
 	glPushMatrix();
 		glPushMatrix();
-		drawCylinder(360, 10, color, 1, 2,-1);
+		drawCylinder(360, 10, color, 1, 2, metallicTex);
 		glPopMatrix();
 	glPopMatrix();
 }
 
-void drumConnectorStick(float *color, int closed){
+void drumConnectorStick(float *color, int closed, int metallicTex){
 	glPushMatrix();
-		drawCylinder(360, 10, color, 0.25, 0.25,-1);
+		drawCylinder(360, 10, color, 0.25, 0.25, metallicTex);
 		if (closed){
 			glTranslated(0,1,0);
 			drawCircle(0.25, 360, 10, color, -1);
@@ -1099,13 +1088,7 @@ void drumConnectorStick(float *color, int closed){
 	glPopMatrix();
 }
 
-void drumLeg(float *color){
-	glPushMatrix();
-		drawCylinder(360, 10, color, 0.25, 0.25,-1);
-	glPopMatrix();
-}
-
-void drumConnectorEndKnot(){
+void drumConnectorEndKnot(int metallicTex){
 	float white[3] = {1.0, 1.0 ,1.0};
 	glPushMatrix();
 	glTranslated(0, 4, 0);
@@ -1113,75 +1096,98 @@ void drumConnectorEndKnot(){
 		glPushMatrix();
 			glScaled(1.5, 0.5, 1.5);
 			glTranslated(0,-1,0);
-			drawCylinderClosedEnds(360, 10, white , 1, 1, -1);
+			drawCylinderClosedEnds(360, 10, white , 1, 1, metallicTex);
 		glPopMatrix();
 		//Middle
 		glPushMatrix();
 			glScaled(1,1,1);
 			glTranslated(0,-2,0);
-			drumConnectorStick(white, false);
+			drumConnectorStick(white, false, -1);
 		glPopMatrix();
 		//Bottom
 		glPushMatrix();
 			glScaled(0.75, 0.5, 0.75);
 			glTranslated(0,-7,0);
-			drawCylinderClosedEnds(360, 10, white , 1, 1, -1);
+			drawCylinderClosedEnds(360, 10, white , 1, 1, metallicTex);
 		glPopMatrix();
 	glPopMatrix();
 }
 
-void drawBase(float *color){
+void drawTomTom(float *color, int cylinderTex, int circleTex){
+	glPushMatrix();
+		drumCylinder(color, cylinderTex, circleTex);
+	glPopMatrix();
+}
+
+void drawTomTomStand(float *color, int metallicTex){
+	glPushMatrix();
+	glTranslated(0, 15, 0);
+		//Connector cube
+		glPushMatrix();
+			glScaled(2, 2, 4);
+			glTranslated(-0.5, 0, -0.5);
+			drawCube(color, true, true, metallicTex);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslated(0, -5, 0);
+			glScaled(3,10,3);
+			drumConnectorStick(color, true, metallicTex);
+		glPopMatrix();
+	glPopMatrix();
+}
+
+void drawBase(float *color, int cylinderTex, int circleTex, int metallicTex){
 	glPushMatrix();
 		glTranslated(0,3,0);
 		glRotated(90, 1, 0, 0);
 		glScaled(1, 1.5, 1);
-		drumCylinder(color);
+		drumCylinder(color, cylinderTex, circleTex);
 	glPopMatrix();
 	// Drum connector on Top
 	glPushMatrix();
 		glTranslated(0, 6, 0);
 		glScaled(0.30, 0.30, 0.30);
-		drumConnectorBase(color);
+		drumConnectorBase(color, metallicTex);
 	glPopMatrix();
 	// Draw T connector on top
 	glPushMatrix();
 		glTranslated(0, 7, 0);
-		drumConnectorStick(color, true);
+		drumConnectorStick(color, true, metallicTex);
 	glPopMatrix();
 	// Two support
 	glPushMatrix();
 		glRotated(60,0,1,0);
 		glTranslated(-0.09, 7.75, -1.5);
 		glScaled(0.18, 0.15, 1.5);
-		drawCube(color, true, true, -1);
+		drawCube(color, true, true, metallicTex);
 	glPopMatrix();
 	glPushMatrix();
 		glRotated(-60,0,1,0);
 		glTranslated(-0.09, 7.75, -1.5);
 		glScaled(0.18, 0.15, 1.5);
-		drawCube(color, true, true, -1);
+		drawCube(color, true, true, metallicTex);
 	glPopMatrix();
 	// Two Connector sticks at the end of support
 	glPushMatrix();
 		glTranslated(-1.45, 8, -0.8);
 		glScaled(0.75, 0.75, 0.75);
-		drumConnectorStick(color, true);
+		drumConnectorStick(color, true, metallicTex);
 	glPopMatrix();
 	glPushMatrix();
 		glTranslated(1.45, 8, -0.8);
 		glScaled(0.75, 0.75, 0.75);
-		drumConnectorStick(color, true);
+		drumConnectorStick(color, true, metallicTex);
 	glPopMatrix();
 	// Two connector ends
 	glPushMatrix();
 		glTranslated(-1.45, 8.75, -0.8);
 		glScaled(0.15,0.15,0.15);
-		drumConnectorEndKnot();
+		drumConnectorEndKnot(metallicTex);
 	glPopMatrix();
 	glPushMatrix();
 		glTranslated(1.45, 8.75, -0.8);
 		glScaled(0.15,0.15,0.15);
-		drumConnectorEndKnot();
+		drumConnectorEndKnot(metallicTex);
 	glPopMatrix();
 	// Two connectors for TomTom
 	glPushMatrix();
@@ -1190,7 +1196,7 @@ void drawBase(float *color){
 		glPushMatrix();
 			glTranslated(-0.09 -1.45, 8.5, -1.5 -1);
 			glScaled(0.18, 0.15, 1.5);
-			drawCube(color, true, true, -1);
+			drawCube(color, true, true, metallicTex);
 		glPopMatrix();
 	glPopMatrix();
 
@@ -1200,35 +1206,12 @@ void drawBase(float *color){
 		glPushMatrix();
 			glTranslated(0.09 + 1.45, 8.5, -1.5 -1);
 			glScaled(0.18, 0.15, 1.5);
-			drawCube(color, true, true, -1);
+			drawCube(color, true, true, metallicTex);
 		glPopMatrix();
 	glPopMatrix();
 }
 
-void drawTomTom(float *color){
-	glPushMatrix();
-		drumCylinder(color);
-	glPopMatrix();
-}
-
-void drawTomTomStand(float *color){
-	glPushMatrix();
-	glTranslated(0, 15, 0);
-		//Connector cube
-		glPushMatrix();
-			glScaled(2, 2, 4);
-			glTranslated(-0.5, 0, -0.5);
-			drawCube(color, true, true, -1);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslated(0, -5, 0);
-			glScaled(3,10,3);
-			drumConnectorStick(color, true);
-		glPopMatrix();
-	glPopMatrix();
-}
-
-void triStand(float *color, int connector, int base){
+void triStand(float *color, int connector, int base, int metallicTex){
 	glPushMatrix();
 		if (base){
 			glTranslated(0,4,0);
@@ -1236,7 +1219,7 @@ void triStand(float *color, int connector, int base){
 			glTranslated(0,5,0);
 		}
 		glScaled(1,3,1);
-		drumConnectorStick(color, true);
+		drumConnectorStick(color, true, metallicTex);
 	glPopMatrix();
 	// Three connecting sticks
 	// Left
@@ -1245,7 +1228,7 @@ void triStand(float *color, int connector, int base){
 		glRotated(-45,0,1,0);
 		glRotated(-45,1,0,0);
 		glScaled(1,2,1);
-		drumConnectorStick(color, true);
+		drumConnectorStick(color, true, metallicTex);
 	glPopMatrix();
 	//Right
 	glPushMatrix();
@@ -1253,20 +1236,20 @@ void triStand(float *color, int connector, int base){
 		glRotated(45,0,1,0);
 		glRotated(-45,1,0,0);
 		glScaled(1,2,1);
-		drumConnectorStick(color, true);
+		drumConnectorStick(color, true, metallicTex);
 	glPopMatrix();
 	// Back
 	glPushMatrix();
 		glTranslated(0,1,-1.5);
 		glRotated(45,1,0,0);
 		glScaled(1,2,1);
-		drumConnectorStick(color, true);
+		drumConnectorStick(color, true, metallicTex);
 	glPopMatrix();
 	// Connnector Piece
 	glPushMatrix();
 		glTranslated(0,7,0);
 		glScaled(0.15,0.15,0.15);
-		drumCylinder(color);
+		drumCylinder(color, -1, -1);
 	glPopMatrix();
 	// connector end piece on the side of connector
 	if (connector){
@@ -1274,71 +1257,71 @@ void triStand(float *color, int connector, int base){
 			glTranslated(0.45,7,0);
 			glRotated(-90, 0, 0, 1);
 			glScaled(0.15,0.15,0.15);
-			drumConnectorEndKnot();
+			drumConnectorEndKnot(metallicTex);
 		glPopMatrix();
 	}
 }
 
-void drawSnareDrum(float *color){
+void drawSnareDrum(float *color, int cylinderTex, int circleTex, int metallicTex){
 	// Draw triStand
 	glPushMatrix();
-		triStand(color,true,true);
+		triStand(color,true,true, metallicTex);
 		glPushMatrix();
 			glTranslated(0,10,0);
 			glRotated(180,1,0,0);
-			triStand(color, false, false);
+			triStand(color, false, false, metallicTex);
 		glPopMatrix();
 	glPopMatrix();
 	// Draw Drum
 	glPushMatrix();
 		glTranslated(0,11,0);
 		glScaled(1.5,1,1.5);
-		drumCylinder(color);
+		drumCylinder(color, cylinderTex , circleTex);
 	glPopMatrix();
 }
 
-void drawHiHat(float *color){
+void drawHiHat(float *color, int metallicTex, int cymbalTex){
 	// Draw triStand
 	glPushMatrix();
-		triStand(color,true,true);
+		triStand(color,true,true, metallicTex);
 		//Connector
 		glPushMatrix();
 			glTranslated(0,4 + 4,0);
 			glScaled(1,2,1);
-			drumConnectorStick(color, false);
+			drumConnectorStick(color, false, metallicTex);
 		glPopMatrix();
 		// Draw cymbal
 		glPushMatrix();
 			glTranslated(0,10,0);
-			drawCircle(4, 360, 10, color, -1);
+			drawCircle(4, 360, 10, color, cymbalTex);
 		glPopMatrix();
 		// Connector piece
 		glPushMatrix();
 			glTranslated(0, 10, 0);
 			glScaled(1.5,0.25,1.5);
-			drumConnectorStick(color, true);
+			drumConnectorStick(color, true, metallicTex);
 		glPopMatrix();
 		// End Piece
 		glPushMatrix();
 			glTranslated(0, 11, 0);
 			glScaled(0.5,1, 0.5);
-			drumConnectorStick(color, true);
+			drumConnectorStick(color, true, metallicTex);
 		glPopMatrix();
 	glPopMatrix();
 }
 
-void drawRide(float *color){
+void drawRide(float *color, int metallicTex, int cymbalTex){
 	glPushMatrix();
 		// triStand
 		glPushMatrix();
-			triStand(color,true,true);
+			triStand(color,true,true, metallicTex);
 		glPopMatrix();
 	glPopMatrix();
 	// Connector Rod
 	glPushMatrix();
 		glTranslated(0,2 + 7,0);
 		glScaled(1,2,1);
-		drumConnectorStick(color, false);
+		drumConnectorStick(color, false, metallicTex);
 	glPopMatrix();
 	// Sphere Connector
 	glPushMatrix();
@@ -1351,7 +1334,7 @@ void drawRide(float *color){
 		glRotated(-45,0,1,0);
 		glRotated(-45,1,0,0);
 		glScaled(0.5,5,0.5);
-		drumConnectorStick(color, false);
+		drumConnectorStick(color, false, metallicTex);
 	glPopMatrix();
 	// Sphere connector at the end of the rod
 	glPushMatrix();
@@ -1363,14 +1346,15 @@ void drawRide(float *color){
 		glTranslated(3.5,16, -3.5);
 		glRotated(-45,0,1,0);
 		glRotated(-15,1,0,0);
-		drawCircle(4, 360, 10, color, -1);
+		drawCircle(4, 360, 10, color, cymbalTex);
 	glPopMatrix();
 }
 
-void drawDrumsSet(float *color){
+void drawDrumsSet(float *color, int cylinderTex, int circleTex, int metallicTex,
+ 									int cymbalTex){
 	//Draw Base
 	glPushMatrix();
-		drawBase(color);
+		drawBase(color, cylinderTex, circleTex, metallicTex);
 	glPopMatrix();
 	// Draw High Tom Tom (Right)
 	glPushMatrix();
@@ -1378,7 +1362,7 @@ void drawDrumsSet(float *color){
 		glRotated(50, 0, 1, 0);
 		glRotated(-45, 1, 0,0);
 		glScaled(0.5, 1, 0.5);
-		drawTomTom(color);
+		drawTomTom(color, cylinderTex, circleTex);
 	glPopMatrix();
 	// Draw Middle Tom Tom (Left)
 	glPushMatrix();
@@ -1386,13 +1370,13 @@ void drawDrumsSet(float *color){
 		glRotated(-50, 0, 1, 0);
 		glRotated(-45, 1, 0,0);
 		glScaled(0.5, 1, 0.5);
-		drawTomTom(color);
+		drawTomTom(color, cylinderTex, circleTex);
 	glPopMatrix();
 	// Draw Floor Tom Tom (Left)
 	glPushMatrix();
 		glTranslated(-4.75, 2 + 3, -4.5);
 		glScaled(0.75, 2, 0.75);
-		drawTomTom(color);
+		drawTomTom(color, cylinderTex, circleTex);
 	glPopMatrix();
 
 	// Draw stands for Floor Tom Tom
@@ -1400,45 +1384,171 @@ void drawDrumsSet(float *color){
 	glPushMatrix();
 		glTranslated(-5, 0, -2);
 		glScaled(0.15, 0.25, 0.15);
-		drawTomTomStand(color);
+		drawTomTomStand(color, metallicTex);
 	glPopMatrix();
 	// Left
 	glPushMatrix();
 		glTranslated(-7.25, 0, -4.5);
 		glScaled(0.15, 0.25, 0.15);
 		glRotated(90,0,1,0);
-		drawTomTomStand(color);
+		drawTomTomStand(color, metallicTex);
 	glPopMatrix();
 	// Back
 	glPushMatrix();
 		glTranslated(-5, 0, -7);
 		glScaled(0.15, 0.25, 0.15);
 		glRotated(180,0,1,0);
-		drawTomTomStand(color);
+		drawTomTomStand(color, metallicTex);
 	glPopMatrix();
 	// Right
 	glPushMatrix();
 		glTranslated(-2.25, 0, -4.5);
 		glScaled(0.15, 0.25, 0.15);
 		glRotated(-90,0,1,0);
-		drawTomTomStand(color);
+		drawTomTomStand(color, metallicTex);
 	glPopMatrix();
 	// Draw Snare Drum (Right)
 	glPushMatrix();
 		glTranslated(5,0.5,-4);
 		glScaled(0.5,0.5,0.5);
-		drawSnareDrum(color);
+		drawSnareDrum(color, cylinderTex, circleTex, metallicTex);
 	glPopMatrix();
 	// Draw HiHat Cymbal (Right behind Snare)
 	glPushMatrix();
 		glTranslated(7,0.5,-7);
 		glScaled(0.75, 0.75, 0.75);
-		drawHiHat(color);
+		drawHiHat(color, metallicTex, cymbalTex);
 	glPopMatrix();
 	// Draw Ride Cymbal
 	glPushMatrix();
 		glTranslated(-7,0.5, 0);
 		glScaled(0.75, 0.75, 0.75);
-		drawRide(color);
+		drawRide(color, metallicTex, cymbalTex);
+	glPopMatrix();
+}
+
+// Dining Table
+void drawDiningTable(float *color, int woodTex, int vaseTex){
+	glPushMatrix();
+	glTranslated(-10, 0, 10);
+		glPushMatrix();
+		glTranslated(10, 3.65, -10);
+		drawRoundTable(2, color, woodTex);
+		glPopMatrix();
+		// Draw a vase and put it in top of the dining table
+		glPushMatrix();
+		glTranslated(10, 4.30,-10);
+		glScaled(0.5, 0.5, 0.5);
+		drawVase(1, color, vaseTex);
+		glPopMatrix();
+		// Chair at the back
+		glPushMatrix();
+		glTranslated(9, 2.6, -16);
+		drawChair(1.5, color, woodTex);
+		glPopMatrix();
+		// Chair on the left
+		glPushMatrix();
+		glTranslated(4, 2.6, -9);
+		glRotated(90, 0, 1, 0);
+		drawChair(1.5, color, woodTex);
+		glPopMatrix();
+		// Chair at the front
+		glPushMatrix();
+		glTranslated(11.5, 2.6, -4);
+		glRotated(180,0, 1,0);
+		drawChair(1.5, color, woodTex);
+		glPopMatrix();
+		// Chair on the right
+		glPushMatrix();
+		glTranslated(16, 2.6, -11);
+		glRotated(-90,0, 1,0);
+		drawChair(1.5, color, woodTex);
+		glPopMatrix();
+	glPopMatrix();
+}
+
+// Draw Sofas
+void drawSofas(float *color, int sofaTex){
+	glPushMatrix();
+	glTranslated(10, 0,-3);
+		glPushMatrix();
+			glTranslated(-10, 0.83, -5);
+			drawSofa(4, color, sofaTex);
+		glPopMatrix();
+		// left Sofa
+		glPushMatrix();
+			glTranslated(-17, 0.83, 5);
+			glRotated(90, 0, 1, 0);
+			drawSofa(4, color, sofaTex);
+		glPopMatrix();
+		// Right Sofa
+		glPushMatrix();
+			glTranslated(-3, 0.83, 5);
+			glRotated(-90, 0, 1, 0);
+			drawSofa(4, color, sofaTex);
+		glPopMatrix();
+	glPopMatrix();
+}
+
+// Draw TV with Stand
+void drawTVWithStand(int frameTex, int screenTex, int shelfTex){
+	// float black[3] = {0.0, 0.0, 0.0};
+	float white[3] = {1.0, 1.0, 1.0};
+	glPushMatrix();
+	glRotated(180, 0,1,0);
+	glTranslated(10, 0, -15);
+		// Draw TV Shelf
+		glPushMatrix();
+			glTranslated(-10, 0.1, 15);
+			drawTVstand(2, white, shelfTex);
+		glPopMatrix();
+
+		// Draw TV Screen
+		glPushMatrix();
+			glTranslated(-3.5, 4.25, 14);
+			glRotated(180, 0, 1, 0);
+			glPushMatrix();
+				glScaled(1, 1, 1);
+				glTranslated(0, 0, 0);
+				drawTVScreen(1, white, screenTex);
+			glPopMatrix();
+			glPushMatrix();
+				glScaled(1, 1, 1);
+				glTranslated(0, 0, 0);
+				drawTVFrame(1, white, frameTex);
+			glPopMatrix();
+		glPopMatrix();
+	glPopMatrix();
+}
+
+void drawTableAtOrigin(float *color, int tableTex){
+	glPushMatrix();
+		glTranslated(-3, 5.15, -2);
+		glScaled(4, 3, 4);
+		drawSquareTable(color, tableTex);
+	glPopMatrix();
+}
+
+// Draw Table with Lamp
+void drawTableWithLampStyle1(float *color, int tableTex, int lampTex){
+	// Draw SquareTable
+	drawTableAtOrigin(color, tableTex);
+	//Draw Lamp Style 1
+	glPushMatrix();
+		glRotated(180,0,1,0);
+		glTranslated(-2, 6.65, 0);
+		glScaled(0.25, 0.25, 0.25);
+		drawLampDownFacing(color, lampTex);
+	glPopMatrix();
+}
+
+void drawTableWithLampStyle2(float *color, int tableTex, int lampTex){
+	// Draw SquareTable
+	drawTableAtOrigin(color, tableTex);
+	//Draw Lamp Style 1
+	glPushMatrix();
+		glTranslated(0, 6.65, 0);
+		glScaled(0.25, 0.25, 0.25);
+		drawLampUpright(color, lampTex);
 	glPopMatrix();
 }

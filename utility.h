@@ -70,7 +70,12 @@ void drawLampDownFacing(float *color, int texture);
 void drawTVScreen(float scale, float *color, int texture);
 void drawTVFrame(float scale, float *color, int texture);
 
-void drawBase(float *color);
-void drawDrumsSet(float *color);
+void drawDrumsSet(float *color, int cylinderTex, int circleTex, int metallicTex,
+									int cymbalTex);
+void drawDiningTable(float *color, int woodTex, int vaseTex);
+void drawSofas(float *color, int sofaTex);
+void drawTVWithStand(int frameTex, int screenTex, int shelfTex);
+void drawTableWithLampStyle1(float *color, int tableTex, int lampTex);
+void drawTableWithLampStyle2(float *color, int tableTex, int lampTex);
 
 #endif
