@@ -67,6 +67,10 @@ float redSpecularLight[4]= {1.0, 0.0, 0.0, 1.0};
 float blueSpecularLight[4]= {0.0, 0.0, 1.0, 1.0};
 float greenSpecularLight[4]= {0.0, 1.0, 0.0, 1.0};
 
+float whiteSpecularMaterial[3] = {1.0, 1.0, 1.0};
+float redDiffuseMaterial[] = {1.0, 0.0, 0.0};
+float greenEmissiveMaterial[] = {0.0, 1.0, 0.0};
+
 float sp1_pos[4] = {0.0, 15.0, -15.0, 1.0};
 float sp1_dir[4] = {0.0f, -1.0f, 0.0f, 0.0f};
 float sp2_pos[4] = {0.0, 10.0, -5.0, 1.0};
@@ -117,8 +121,8 @@ void createSpotlight(int Light, float *spposition, float *spdirection,
 
 	glEnable(GL_COLOR_MATERIAL);
 	//  Set specular colors
-	glMaterialfv(GL_FRONT,GL_SPECULAR, spspecular);
-	glMaterialfv(GL_FRONT,GL_SHININESS,shinyvec);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR, whiteSpecularMaterial);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 
 	glEnable(Light);
 	glLightfv(Light, GL_AMBIENT, spambient);
