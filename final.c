@@ -213,11 +213,11 @@ void display()
 
 			sp2_pos[0] = 3*Cos(zh);sp2_pos[2] = (3*Sin(zh)) -12;
 			// RedSpotLight
-			createSpotlight(GL_LIGHT2, sp2_pos, sp2_dir, redSpecularLight, 30, 1);
+			createSpotlight(GL_LIGHT2, sp2_pos, sp2_dir, normalSpecularLight, 30, 1);
 
 			sp3_pos[0] = 7*Cos(zh);sp3_pos[2] = (7*Sin(zh)) -12;
 			// Green Light
-			createSpotlight(GL_LIGHT3, sp3_pos, sp3_dir, greenSpecularLight, 20, 1);
+			createSpotlight(GL_LIGHT3, sp3_pos, sp3_dir, normalSpecularLight, 20, 1);
 
 			// Turn on both lamps
 			float sp4_pos[4] = {-15.0, 15.0, -20.0, 1.0};
